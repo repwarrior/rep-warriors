@@ -151,6 +151,41 @@ def build_svg(plan, geo, scale, crop):
             f'opacity="0.95"/>'
         )
 
+    # --- position boxes: TradingView's long/short tool ----------------------
+    for pos in plan.get("positions", []):
+        long_ = pos["side"] == "long"
+        entry, stop, target = pos["entry"], pos["stop"], pos["target"]
+        ye, ys, yt = scale.y(entry), scale.y(stop), scale.y(target)
+        px0, px1 = pos["x0"], pos["x1"]
+        w = px1 - px0
+        # profit leg runs entry->target, risk leg runs entry->stop
+        for lo_y, hi_y, colour in (
+            (min(ye, yt), max(ye, yt), SUPPORT),
+            (min(ye, ys), max(ye, ys), RESISTANCE),
+        ):
+            o.append(
+                f'<rect x="{px0}" y="{lo_y:.1f}" width="{w}" height="{hi_y - lo_y:.1f}" '
+                f'fill="{colour}" fill-opacity="{pos.get("fill", 0.20)}" '
+                f'stroke="{colour}" stroke-width="2"/>'
+            )
+        o.append(
+            f'<line x1="{px0}" y1="{ye:.1f}" x2="{px1}" y2="{ye:.1f}" '
+            f'stroke="{NEUTRAL}" stroke-width="3"/>'
+        )
+        rr = abs(target - entry) / abs(entry - stop)
+        head = f'{"LONG" if long_ else "SHORT"} · {rr:.1f}R'
+        hy = (min(ye, yt) if long_ else min(ye, ys)) - 14
+        o.append(
+            f'<text x="{px0}" y="{hy:.1f}" class="zl" '
+            f'fill="{SUPPORT if long_ else RESISTANCE}">{esc(head)}</text>'
+        )
+        if pos.get("label"):
+            ly = (max(ye, ys) if long_ else max(ye, yt)) + 34
+            o.append(
+                f'<text x="{px0}" y="{ly:.1f}" class="co" fill="{NEUTRAL}" '
+                f'opacity="0.85">{esc(pos["label"])}</text>'
+            )
+
     # --- strategy entries: a time marker plus a numbered side badge ---------
     ent = plan.get("entries")
     if ent:
@@ -221,6 +256,9 @@ def build_html(plan, geo, scale):
     if "note" in kinds:
         legend.append((f'<span class="sw box" style="border-color:{ACCENT}"></span>',
                        plan.get("note_legend", "Thin tape")))
+    if plan.get("positions"):
+        legend.append((f'<span class="sw" style="background:{SUPPORT}"></span>', "Target zone"))
+        legend.append((f'<span class="sw" style="background:{RESISTANCE}"></span>', "Stop zone"))
     if plan.get("entries"):
         legend.append((f'<span class="sw" style="background:{SUPPORT}"></span>', "Long entry"))
         legend.append((f'<span class="sw" style="background:{RESISTANCE}"></span>', "Short entry"))
