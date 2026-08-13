@@ -118,7 +118,8 @@ def build_svg(plan, geo, scale, crop):
         colour = {"resistance": RESISTANCE, "support": SUPPORT, "neutral": NEUTRAL}[lv["kind"]]
         y = scale.y(lv["price"])
         o.append(
-            f'<line x1="{plot_left}" y1="{y:.1f}" x2="{plot_right}" y2="{y:.1f}" '
+            f'<line x1="{lv.get("x0", plot_left)}" y1="{y:.1f}" '
+            f'x2="{lv.get("x1", plot_right)}" y2="{y:.1f}" '
             f'stroke="{colour}" stroke-width="2.5" stroke-dasharray="12 8"/>'
         )
         if lv.get("label"):

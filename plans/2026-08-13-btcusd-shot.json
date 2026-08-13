@@ -1,0 +1,136 @@
+{
+  "source": "examples/btcusd-2026-08-13-shot.png",
+  "geometry": "plans/2026-08-13-btcusd-shot.geometry.json",
+  "crop": [
+    0,
+    175,
+    1290,
+    2390
+  ],
+  "decimals": 0,
+  "calibration": {
+    "top_gridline_price": 66500,
+    "step": 500,
+    "_note": "top detected gridline y=408 is 66,500; verified against the 63,760 price line at y=993"
+  },
+  "plot_left_x": 16,
+  "plot_right_x": 1070,
+  "label_right_x": 1060,
+  "tag_x": 1080,
+  "meta": {
+    "symbol": "BTCUSD \u00b7 Bitcoin / U.S. Dollar",
+    "timeframe": "1D",
+    "price": 63760,
+    "asof": "13 Aug 2026 \u00b7 18:08"
+  },
+  "levels": [
+    {
+      "kind": "resistance",
+      "price": 67000,
+      "label": "ABOVE 67,000 \u2192 THIN TAPE TO 76,000",
+      "x0": 352
+    }
+  ],
+  "zones": [
+    {
+      "kind": "resistance",
+      "lo": 66700,
+      "hi": 66950,
+      "label": "RANGE CEILING \u00b7 21 JUL",
+      "label_y": 430,
+      "fill": 0.1
+    },
+    {
+      "kind": "resistance",
+      "lo": 65300,
+      "hi": 65450,
+      "label": "CAPPED HERE 5 SESSIONS",
+      "label_y": 730,
+      "fill": 0.12
+    },
+    {
+      "kind": "support",
+      "lo": 62200,
+      "hi": 62450,
+      "label": "RANGE FLOOR \u00b7 4 CLOSES",
+      "label_y": 1215,
+      "fill": 0.12
+    },
+    {
+      "kind": "support",
+      "lo": 61250,
+      "hi": 61750,
+      "label": "WICK FLOOR \u00b7 EARLY JULY",
+      "label_y": 1370,
+      "fill": 0.07
+    }
+  ],
+  "tags": [
+    {
+      "kind": "resistance",
+      "price": 67000
+    },
+    {
+      "kind": "resistance",
+      "price": 65400
+    },
+    {
+      "kind": "support",
+      "price": 62300
+    },
+    {
+      "kind": "support",
+      "price": 61300
+    }
+  ],
+  "path": {
+    "points": [
+      {
+        "x": 670,
+        "price": 63760
+      },
+      {
+        "x": 762,
+        "price": 64700
+      },
+      {
+        "x": 880,
+        "price": 62400
+      },
+      {
+        "x": 1030,
+        "price": 64600
+      }
+    ]
+  },
+  "callouts": [
+    {
+      "text": "5 LOWER HIGHS\nSINCE 9 AUG",
+      "text_x": 862,
+      "text_y": 856,
+      "from_x": 790,
+      "from_y": 872,
+      "to_x": 664,
+      "to_y": 928
+    },
+    {
+      "text": "MOMENTUM NEGATIVE\nBUT FLATTENING",
+      "text_x": 866,
+      "text_y": 1742,
+      "from_x": 800,
+      "from_y": 1786,
+      "to_x": 688,
+      "to_y": 1856
+    }
+  ],
+  "summary": {
+    "points": [
+      "Five straight lower highs since 9 Aug (65,426 \u2192 63,649) \u2014 price is sliding inside the range, not breaking out of it. Today printed the first higher low of that run, so the slide is pausing.",
+      "62,200 is the level that matters: closes bottomed there on 14 Jul, 1 Aug and 3 Aug. The early-July wicks ran 950 lower to 61,250 \u2014 treat that as the stop-run, not the structure.",
+      "65,300\u201365,450 has capped every attempt for a week. Only above that does the real ceiling at 66,700\u201366,950 come into play.",
+      "MACD is below signal, histogram negative three sessions (\u221277) but flattening. The range is 4.1 ATR wide \u2014 about two days' travel to either edge, so mid-range offers little."
+    ],
+    "bias": "Trend bias: NEUTRAL \u2014 range 62,200 to 66,900",
+    "invalidation": "a daily close below 62,200 targets 61,250; above 67,000 opens thin tape toward 76,000"
+  }
+}

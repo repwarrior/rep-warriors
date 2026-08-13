@@ -1,0 +1,39 @@
+{
+  "image": {
+    "width": 1290,
+    "height": 2796
+  },
+  "separators": [
+    1596,
+    2391,
+    2547
+  ],
+  "gutter_x": 1208,
+  "price_pane": {
+    "top": 223,
+    "bottom": 1596
+  },
+  "gridlines_y": [
+    408,
+    515,
+    622,
+    728,
+    836,
+    942,
+    1049,
+    1156,
+    1262,
+    1369
+  ],
+  "gridline_spacing": 107.0,
+  "data_x_hint": {
+    "left": 3,
+    "right": 786
+  },
+  "time_gridline_x": [
+    453,
+    1003
+  ],
+  "time_gridline_spacing": 550.0,
+  "source": "examples/btcusd-2026-08-13-shot.png"
+}
