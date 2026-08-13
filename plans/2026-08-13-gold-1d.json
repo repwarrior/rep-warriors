@@ -1,0 +1,154 @@
+{
+  "source": "examples/gold-2026-08-13.png",
+  "geometry": "plans/2026-08-13-gold-1d.geometry.json",
+  "crop": [
+    0,
+    175,
+    1290,
+    2390
+  ],
+  "decimals": 0,
+  "calibration": {
+    "top_gridline_price": 4700,
+    "step": 100,
+    "_note": "top detected gridline y=422 is the 4,700 line; gridlines step 100 down"
+  },
+  "plot_left_x": 20,
+  "plot_right_x": 1050,
+  "label_right_x": 1040,
+  "tag_x": 1062,
+  "meta": {
+    "symbol": "GOLD \u00b7 CFDs on Gold (US$ / OZ)",
+    "timeframe": "1D",
+    "price": 4386.73,
+    "asof": "13 Aug 2026"
+  },
+  "zones": [
+    {
+      "kind": "resistance",
+      "lo": 4600,
+      "hi": 4700,
+      "label": "STRONG RESISTANCE",
+      "anchor": "end",
+      "label_x": 1040,
+      "label_y": 440,
+      "fill": 0.06
+    },
+    {
+      "kind": "resistance",
+      "lo": 4450,
+      "hi": 4550,
+      "label": "SUPPLY SHELF \u00b7 TARGET 1 \u2192 2",
+      "label_y": 590,
+      "fill": 0.06
+    },
+    {
+      "kind": "pullback",
+      "lo": 4300,
+      "hi": 4340,
+      "x0": 742,
+      "x1": 1050,
+      "fill": 0.16,
+      "label": "PULLBACK / RETEST ZONE",
+      "label_y": 900,
+      "label_x": 650
+    },
+    {
+      "kind": "support",
+      "lo": 4150,
+      "hi": 4200,
+      "label": "KEY SUPPORT \u00b7 BREAKOUT RETEST",
+      "label_y": 1100,
+      "fill": 0.07
+    },
+    {
+      "kind": "support",
+      "lo": 4000,
+      "hi": 4100,
+      "label": "MAJOR SUPPORT \u00b7 THE BASE",
+      "label_y": 1240,
+      "fill": 0.07
+    }
+  ],
+  "tags": [
+    {
+      "kind": "resistance",
+      "price": 4545
+    },
+    {
+      "kind": "resistance",
+      "price": 4460
+    },
+    {
+      "kind": "neutral",
+      "price": 4320
+    },
+    {
+      "kind": "support",
+      "price": 4180
+    },
+    {
+      "kind": "support",
+      "price": 4050
+    }
+  ],
+  "path": {
+    "points": [
+      {
+        "x": 725,
+        "price": 4387
+      },
+      {
+        "x": 805,
+        "price": 4318
+      },
+      {
+        "x": 900,
+        "price": 4470
+      },
+      {
+        "x": 952,
+        "price": 4437
+      },
+      {
+        "x": 1005,
+        "price": 4548
+      }
+    ]
+  },
+  "callouts": [
+    {
+      "text": "STRONG BREAKOUT\n6 Aug \u00b7 +4.7% in a day",
+      "text_x": 250,
+      "text_y": 1476,
+      "from_x": 420,
+      "from_y": 1462,
+      "to_x": 652,
+      "to_y": 1305
+    },
+    {
+      "text": "MEASURED MOVE MET\n4,184 base + 200 = 4,384",
+      "text_x": 900,
+      "text_y": 336
+    },
+    {
+      "text": "MOMENTUM POSITIVE,\nBUT COOLING",
+      "text_x": 880,
+      "text_y": 1800,
+      "from_x": 830,
+      "from_y": 1855,
+      "to_x": 745,
+      "to_y": 1920
+    }
+  ],
+  "summary": {
+    "points": [
+      "Broke out of the 3,985\u20134,185 base on 6 Aug. The measured move (+200) completed at 4,384 and price has stalled there \u2014 today is the first down day of the leg.",
+      "MACD is still firmly positive (75 vs signal 40) but the histogram ticked down for the first time since the breakout: a pause, not a reversal.",
+      "4,350\u20134,450 is thin \u2014 barely any trade happened there on the way down \u2014 so moves through it tend to be quick in both directions.",
+      "First real supply is the 4,450\u20134,550 shelf (18 sessions spent there in May\u2013June), then 4,600\u20134,700."
+    ],
+    "bias": "Trend bias: BULLISH while above 4,200",
+    "invalidation": "a daily close below 4,180 puts price back inside the base and cancels the plan"
+  }
+}

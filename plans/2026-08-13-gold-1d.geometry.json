@@ -1,0 +1,41 @@
+{
+  "image": {
+    "width": 1290,
+    "height": 2796
+  },
+  "separators": [
+    1596,
+    2391,
+    2547
+  ],
+  "gutter_x": 1240,
+  "price_pane": {
+    "top": 223,
+    "bottom": 1596
+  },
+  "gridlines_y": [
+    422,
+    561,
+    701,
+    840,
+    980,
+    1120,
+    1260,
+    1400,
+    1539
+  ],
+  "gridline_spacing": 140.0,
+  "data_x_hint": {
+    "left": 11,
+    "right": 1239
+  },
+  "time_gridline_x": [
+    54,
+    245,
+    446,
+    657,
+    858
+  ],
+  "time_gridline_spacing": 201.0,
+  "source": "examples/gold-2026-08-13.png"
+}
