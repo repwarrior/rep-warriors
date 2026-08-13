@@ -1,0 +1,127 @@
+{
+  "source": "examples/btc-2026-08-13.png",
+  "geometry": "plans/2026-08-13-btc-1d.geometry.json",
+  "crop": [
+    0,
+    0,
+    1290,
+    2400
+  ],
+  "decimals": 0,
+  "calibration": {
+    "top_gridline_price": 85000,
+    "step": 5000,
+    "_note": "synth.py reports this directly; top gridline y=215"
+  },
+  "plot_left_x": 24,
+  "plot_right_x": 1045,
+  "label_right_x": 1035,
+  "tag_x": 1060,
+  "meta": {
+    "symbol": "BTC / USD \u00b7 Bitcoin",
+    "timeframe": "1D",
+    "price": 63505.81,
+    "asof": "13 Aug 2026"
+  },
+  "zones": [
+    {
+      "kind": "resistance",
+      "lo": 76000,
+      "hi": 82000,
+      "label": "MAJOR SUPPLY \u00b7 MAY DISTRIBUTION",
+      "label_y": 420,
+      "fill": 0.07
+    },
+    {
+      "kind": "note",
+      "lo": 67000,
+      "hi": 75000,
+      "label": "AIR POCKET \u00b7 THIN TAPE",
+      "label_y": 800,
+      "fill": 0.06
+    },
+    {
+      "kind": "resistance",
+      "lo": 65400,
+      "hi": 66900,
+      "label": "RANGE CEILING \u00b7 3 TESTS",
+      "label_y": 1062,
+      "fill": 0.1
+    },
+    {
+      "kind": "support",
+      "lo": 62000,
+      "hi": 62500,
+      "label": "RANGE FLOOR \u00b7 2 TESTS",
+      "label_y": 1312,
+      "fill": 0.1
+    },
+    {
+      "kind": "support",
+      "lo": 57700,
+      "hi": 59000,
+      "label": "MAJOR SUPPORT \u00b7 DOUBLE BOTTOM",
+      "label_y": 1502,
+      "fill": 0.07
+    }
+  ],
+  "tags": [
+    {
+      "kind": "resistance",
+      "price": 66900
+    },
+    {
+      "kind": "resistance",
+      "price": 65400
+    },
+    {
+      "kind": "support",
+      "price": 62200
+    },
+    {
+      "kind": "support",
+      "price": 57700
+    }
+  ],
+  "path": {
+    "points": [
+      {
+        "x": 782,
+        "price": 63506
+      },
+      {
+        "x": 858,
+        "price": 62300
+      },
+      {
+        "x": 952,
+        "price": 64500
+      },
+      {
+        "x": 1035,
+        "price": 63800
+      }
+    ]
+  },
+  "callouts": [
+    {
+      "text": "MACD CROSSED DOWN\n4 sessions of falling histogram",
+      "text_x": 880,
+      "text_y": 1745,
+      "from_x": 828,
+      "from_y": 1800,
+      "to_x": 786,
+      "to_y": 1930
+    }
+  ],
+  "summary": {
+    "points": [
+      "Down 30% from 82,814 (6 May) to 57,718 (1 Jul), then five weeks of chop. At 63,506 price sits mid-range, in the most heavily traded band of the whole window.",
+      "The ceiling has rejected three times \u2014 65,560 (15 Jul), 66,924 (21 Jul), 65,426 (9 Aug). The floor has held twice \u2014 62,160 (18 Jun), 62,210 (1 Aug).",
+      "MACD has crossed below its signal and the histogram has fallen four sessions running (+89 \u2192 \u221293): the first sustained downside momentum since early July.",
+      "67,000\u201375,000 is almost untraded \u2014 the May collapse left no structure there \u2014 so a daily close above 67,000 could travel quickly toward 76,000."
+    ],
+    "bias": "Trend bias: NEUTRAL \u2014 range 62,000 to 66,900, edge is at the edges",
+    "invalidation": "below 62,000 opens 59,000\u201360,000; above 67,000 opens the air pocket toward 76,000"
+  }
+}

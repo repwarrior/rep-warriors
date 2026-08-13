@@ -1,0 +1,47 @@
+{
+  "image": {
+    "width": 1290,
+    "height": 2400
+  },
+  "separators": [
+    1596,
+    2330
+  ],
+  "gutter_x": 1053,
+  "price_pane": {
+    "top": 215,
+    "bottom": 1576
+  },
+  "gridlines_y": [
+    215,
+    442,
+    669,
+    896,
+    1122,
+    1349,
+    1576
+  ],
+  "gridline_spacing": 226.833,
+  "data_x_hint": {
+    "left": 31,
+    "right": 782
+  },
+  "time_gridline_x": [
+    72,
+    283,
+    488,
+    700
+  ],
+  "time_gridline_spacing": null,
+  "source": "examples/btc-2026-08-13.png",
+  "synth": {
+    "top_gridline_price": 85000.0,
+    "step": 5000.0,
+    "last_bar_x": 782,
+    "bar_slot_px": 6.826,
+    "bars": 111,
+    "first": "2026-04-25",
+    "last": "2026-08-13",
+    "last_close": 63505.81
+  }
+}

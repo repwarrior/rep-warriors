@@ -90,7 +90,8 @@ def build_svg(plan, geo, scale, crop):
 
     # --- price zones (a shaded band between two prices) ---------------------
     for z in plan.get("zones", []):
-        colour = {"resistance": RESISTANCE, "support": SUPPORT, "pullback": ZONE}[z["kind"]]
+        colour = {"resistance": RESISTANCE, "support": SUPPORT,
+                  "pullback": ZONE, "note": ACCENT}[z["kind"]]
         ya, yb = scale.y(z["hi"]), scale.y(z["lo"])
         zx0 = z.get("x0", plot_left)
         zx1 = z.get("x1", plot_right)
@@ -185,6 +186,7 @@ def build_html(plan, geo, scale):
         (f'<span class="sw dash" style="border-color:{SUPPORT}"></span>', "Support"),
         (f'<span class="sw dash" style="border-color:{RESISTANCE}"></span>', "Resistance"),
         (f'<span class="sw box" style="border-color:{ZONE}"></span>', "Pullback zone"),
+        (f'<span class="sw box" style="border-color:{ACCENT}"></span>', "Thin tape"),
     ]
     legend_html = "".join(
         f'<div class="lg">{sw}<span>{esc(txt)}</span></div>' for sw, txt in legend
