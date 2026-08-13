@@ -182,21 +182,40 @@ def build_html(plan, geo, scale):
     m = plan.get("meta", {})
     s = plan.get("summary", {})
 
-    legend = [
-        (f'<span class="sw" style="background:{PATH}"></span>', "Expected path"),
-        (f'<span class="sw dash" style="border-color:{SUPPORT}"></span>', "Support"),
-        (f'<span class="sw dash" style="border-color:{RESISTANCE}"></span>', "Resistance"),
-        (f'<span class="sw box" style="border-color:{ZONE}"></span>', "Pullback zone"),
-        (f'<span class="sw box" style="border-color:{ACCENT}"></span>', "Thin tape"),
-    ]
+    # Only key what the plan actually draws, so a chart with no forecast does
+    # not advertise one.
+    kinds = {z["kind"] for z in plan.get("zones", [])} | {
+        lv["kind"] for lv in plan.get("levels", [])}
+    legend = []
+    if plan.get("path"):
+        legend.append((f'<span class="sw" style="background:{PATH}"></span>', "Expected path"))
+    if "support" in kinds:
+        legend.append((f'<span class="sw dash" style="border-color:{SUPPORT}"></span>', "Support"))
+    if "resistance" in kinds:
+        legend.append((f'<span class="sw dash" style="border-color:{RESISTANCE}"></span>', "Resistance"))
+    if "pullback" in kinds:
+        legend.append((f'<span class="sw box" style="border-color:{ZONE}"></span>',
+                       plan.get("zone_legend", "Pullback zone")))
+    if "note" in kinds:
+        legend.append((f'<span class="sw box" style="border-color:{ACCENT}"></span>',
+                       plan.get("note_legend", "Thin tape")))
+    for extra in plan.get("legend_extra", []):
+        legend.append((f'<span class="sw" style="background:{ACCENT}"></span>', extra))
     legend_html = "".join(
         f'<div class="lg">{sw}<span>{esc(txt)}</span></div>' for sw, txt in legend
     )
+    key_html = f'<div id="key">{legend_html}</div>' if len(legend) >= 2 else ""
 
     bullets = "".join(f"<li>{esc(b)}</li>" for b in s.get("points", []))
     bias = s.get("bias", "")
     bias_colour = SUPPORT if "BULL" in bias.upper() else (
         RESISTANCE if "BEAR" in bias.upper() else NEUTRAL
+    )
+
+    b = plan.get("badge", {})
+    badge = (
+        f'<div id="badge"><b>{esc(b.get("title", "TRADE PLAN"))}</b>'
+        f'<span>{esc(b.get("sub", "read off this chart"))}</span></div>'
     )
 
     invalid = ""
@@ -245,7 +264,7 @@ def build_html(plan, geo, scale):
   <div id="chart">
     <img src="{data_uri(src)}">
     {build_svg(plan, geo, scale, crop)}
-    <div id="badge"><b>TRADE PLAN</b><span>read off this chart</span></div>
+    {badge}
   </div>
   <div id="foot">
     <div id="sum">
@@ -254,7 +273,7 @@ def build_html(plan, geo, scale):
       <div class="biasline">{esc(bias)}</div>
       {invalid}
     </div>
-    <div id="key">{legend_html}</div>
+    {key_html}
   </div>
   <div id="meta">
     <span>{esc(m.get("symbol", ""))} &middot; {esc(m.get("timeframe", ""))}

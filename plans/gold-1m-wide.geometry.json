@@ -1,0 +1,46 @@
+{
+  "image": {
+    "width": 1290,
+    "height": 2796
+  },
+  "separators": [
+    1596,
+    2391,
+    2547
+  ],
+  "gutter_x": 1240,
+  "price_pane": {
+    "top": 223,
+    "bottom": 1596
+  },
+  "gridlines_y": [
+    353,
+    450,
+    547,
+    644,
+    741,
+    838,
+    936,
+    1032,
+    1130,
+    1226,
+    1324,
+    1421,
+    1518
+  ],
+  "gridline_spacing": 97.0,
+  "data_x_hint": {
+    "left": 2,
+    "right": 1239
+  },
+  "time_gridline_x": [
+    73,
+    257,
+    441,
+    624,
+    808,
+    992
+  ],
+  "time_gridline_spacing": 184.0,
+  "source": "examples/gold-1m-wide.png"
+}

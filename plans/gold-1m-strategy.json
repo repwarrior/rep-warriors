@@ -1,0 +1,94 @@
+{
+  "source": "examples/gold-1m-wide.png",
+  "geometry": "plans/gold-1m-wide.geometry.json",
+  "crop": [
+    0,
+    175,
+    1290,
+    2390
+  ],
+  "decimals": 1,
+  "calibration": {
+    "top_gridline_price": 4372.5,
+    "step": 2.5,
+    "_note": "top detected gridline y=353 is 4,372.5; verified against the 4,349.918 price line at y=1229"
+  },
+  "plot_left_x": 16,
+  "plot_right_x": 1055,
+  "label_right_x": 1045,
+  "tag_x": 1070,
+  "zone_legend": "Chop box",
+  "meta": {
+    "symbol": "GOLD \u00b7 CFDs on Gold (US$/OZ)",
+    "timeframe": "1m \u00b7 Price Channel Strategy",
+    "price": 4349.918,
+    "asof": "13 Aug 2026 \u00b7 17:00\u201321:00"
+  },
+  "zones": [
+    {
+      "kind": "pullback",
+      "lo": 4346.0,
+      "hi": 4352.5,
+      "x0": 480,
+      "x1": 815,
+      "fill": 0.14,
+      "label": "CHOP BOX \u00b7 6.5 USD",
+      "anchor": "end",
+      "label_x": 1045,
+      "label_y": 1180
+    }
+  ],
+  "tags": [
+    {
+      "kind": "resistance",
+      "price": 4352.5
+    },
+    {
+      "kind": "support",
+      "price": 4346.0
+    }
+  ],
+  "callouts": [
+    {
+      "text": "28 USD DECLINE IN 2H20\nTHE MOVE IT EXISTS TO CATCH",
+      "text_x": 700,
+      "text_y": 470,
+      "from_x": 620,
+      "from_y": 520,
+      "to_x": 300,
+      "to_y": 790
+    },
+    {
+      "text": "2 LONGS TAKEN\nINTO THE DECLINE",
+      "text_x": 928,
+      "text_y": 700,
+      "from_x": 850,
+      "from_y": 740,
+      "to_x": 410,
+      "to_y": 1000
+    },
+    {
+      "text": "6 ENTRIES HERE\nLONG SHORT LONG SHORT",
+      "text_x": 895,
+      "text_y": 1425,
+      "from_x": 830,
+      "from_y": 1400,
+      "to_x": 720,
+      "to_y": 1330
+    }
+  ],
+  "summary": {
+    "points": [
+      "Eleven entries in four hours \u2014 roughly 66 a day, five short and six long. Six of them landed inside a 6.5 USD box in the final 100 minutes, alternating long-short-long-short. That is a whipsaw signature, not a signal.",
+      "The 28 USD slide from 17:00 to 19:20 is exactly the move a channel breakout exists to catch. It took at least two longs into it, near 4,357.8 and 4,356.2 \u2014 buying bounces against a falling channel.",
+      "Gold is a genuinely better venue than EURUSD. Its 1m bars run about 2.6\u00d7 larger relative to price (1.10 bp vs 0.42 bp) and its spread is roughly half in bp terms, so spread eats ~63% of a 1m bar here against 333% on EURUSD \u2014 about 5\u00d7 kinder.",
+      "Still not enough. At a 0.30 spread and 66 trades a day you pay ~20 USD into gold's ~55 USD daily range: 36% of everything available. You want that under 10%, which means 15m\u20131h \u2014 the same conclusion as EURUSD."
+    ],
+    "bias": "Verdict: BETTER INSTRUMENT, SAME TIMEFRAME PROBLEM",
+    "invalidation": "gold spread assumed 0.20\u20130.50 USD; send the SELL/BUY tags and these numbers become exact"
+  },
+  "badge": {
+    "title": "STRATEGY AUTOPSY",
+    "sub": "Price Channel, 1m gold"
+  }
+}
