@@ -1,0 +1,243 @@
+<meta charset="utf-8">
+<style>
+  :root {
+    --bg: #0c0e12; --panel: #12151b; --line: #232833; --line2: #1a1e26;
+    --ink: #e8ecf1; --ink2: #98a3b0; --ink3: #6b7683;
+    --loss: #f2434a; --gain: #2ea86a; --warn: #f5c542; --cool: #3d7dff;
+    --mono: "DejaVu Sans Mono", ui-monospace, monospace;
+    --sans: "DejaVu Sans", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: var(--sans); }
+  #sheet { width: 1290px; background: var(--bg); color: var(--ink); padding: 34px 38px 30px; }
+
+  .hdr { display: flex; justify-content: space-between; align-items: flex-end;
+         border-bottom: 2px solid var(--line); padding-bottom: 18px; margin-bottom: 26px; }
+  .hdr h1 { font-size: 42px; font-weight: 700; letter-spacing: -.5px; }
+  .hdr .sub { font-family: var(--mono); font-size: 20px; color: var(--ink3); margin-top: 6px; }
+  .hdr .right { text-align: right; font-family: var(--mono); font-size: 19px; color: var(--ink3); line-height: 1.5; }
+  .verdict { color: var(--loss); font-size: 26px; font-weight: 700; letter-spacing: .5px; }
+
+  h2 { font-family: var(--mono); font-size: 19px; letter-spacing: 2px; color: var(--ink3);
+       font-weight: 700; margin: 30px 0 16px; }
+  section:first-of-type h2 { margin-top: 0; }
+
+  .thesis { background: var(--panel); border: 2px solid var(--line);
+            border-left: 5px solid var(--loss); border-radius: 6px; padding: 24px 28px; }
+  .thesis .big { font-size: 31px; font-weight: 700; line-height: 1.28; margin-bottom: 20px; }
+  .mrow { display: grid; grid-template-columns: 300px 1fr 96px; align-items: center;
+          gap: 16px; margin-bottom: 11px; }
+  .mlabel { font-family: var(--mono); font-size: 19px; color: var(--ink2); }
+  .mbar { height: 20px; border-radius: 3px; }
+  .mval { font-family: var(--mono); font-size: 20px; font-weight: 700; text-align: right; }
+  .note { font-family: var(--mono); font-size: 18px; color: var(--ink3); margin-top: 12px; }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .tile { background: var(--panel); border: 2px solid var(--line); border-radius: 6px; padding: 18px 20px; }
+  .tile .k { font-family: var(--mono); font-size: 16px; letter-spacing: 1px; color: var(--ink3); margin-bottom: 9px; }
+  .tile .v { font-family: var(--mono); font-size: 36px; font-weight: 700; letter-spacing: -1px; }
+  .tile .s { font-size: 17px; color: var(--ink3); margin-top: 5px; }
+
+  table { border-collapse: collapse; width: 100%; }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line2); font-size: 21px; }
+  thead th { font-family: var(--mono); font-size: 16px; letter-spacing: 1.2px; color: var(--ink3); }
+  td.n, th.n { font-family: var(--mono); text-align: right; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  .wrapt { background: var(--panel); border: 2px solid var(--line); border-radius: 6px; overflow: hidden; }
+  tr.now td { background: rgba(242,67,74,.12); }
+  tr.now td:first-child { font-weight: 700; }
+  tr.go td { background: rgba(46,168,106,.11); }
+  tr.go td:first-child { font-weight: 700; }
+
+  .track { display: inline-block; width: 190px; height: 13px; background: var(--line);
+           border-radius: 3px; overflow: hidden; vertical-align: middle; margin-right: 12px; }
+  .fill { height: 100%; border-radius: 3px; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .box { background: var(--panel); border: 2px solid var(--line); border-radius: 6px; padding: 22px 24px; }
+  .box h3 { font-family: var(--mono); font-size: 18px; letter-spacing: 1px; margin-bottom: 12px; }
+  .box.a h3 { color: var(--gain); } .box.b h3 { color: var(--loss); }
+  .box p { font-size: 19px; color: var(--ink2); line-height: 1.5; }
+
+  .bullets { background: var(--panel); border: 2px solid var(--warn); border-radius: 6px; padding: 22px 26px; }
+  .bullets li { font-size: 20px; color: var(--ink2); line-height: 1.5; margin: 0 0 11px 22px; }
+  .bullets li:last-child { margin-bottom: 0; }
+  .bullets b { color: var(--ink); }
+
+  footer { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--line);
+           font-family: var(--mono); font-size: 16px; color: var(--ink3); line-height: 1.6;
+           display: flex; justify-content: space-between; gap: 30px; }
+</style>
+
+<div id="sheet">
+
+  <div class="hdr">
+    <div>
+      <h1>Price Channel Postmortem</h1>
+      <div class="sub">EURUSD · 1m · OANDA · 471 trades · 3–13 Aug 2026</div>
+    </div>
+    <div class="right">
+      <div class="verdict">NEGATIVE EXPECTANCY</div>
+      <div>profit factor 0.662</div>
+    </div>
+  </div>
+
+  <section>
+    <div class="thesis">
+      <div class="big">Your spread is the same size as your entire chart.</div>
+      <div class="mrow">
+        <span class="mlabel">Visible range · 50 min</span>
+        <div class="mbar" style="width:100%;background:#4a5563"></div>
+        <span class="mval" style="color:var(--ink2)">1.6 p</span>
+      </div>
+      <div class="mrow">
+        <span class="mlabel">Spread · paid every trade</span>
+        <div class="mbar" style="width:100%;background:var(--loss)"></div>
+        <span class="mval" style="color:var(--loss)">1.6 p</span>
+      </div>
+      <div class="note">Drawn to scale. To profit you need a move larger than everything on screen.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>WHAT THE PANEL REPORTS</h2>
+    <div class="tiles">
+      <div class="tile"><div class="k">PROFIT FACTOR</div>
+        <div class="v" style="color:var(--loss)">0.662</div><div class="s">makes 66¢ per $1 lost</div></div>
+      <div class="tile"><div class="k">WIN RATE</div>
+        <div class="v">29.72%</div><div class="s">140 of 471</div></div>
+      <div class="tile"><div class="k">EXPECTANCY</div>
+        <div class="v" style="color:var(--loss)">−0.238<span style="font-size:24px">R</span></div>
+        <div class="s">per trade</div></div>
+      <div class="tile"><div class="k">CUMULATIVE</div>
+        <div class="v" style="color:var(--loss)">−111.9<span style="font-size:24px">R</span></div>
+        <div class="s">over 471 trades</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>THE EXPECTANCY GAP — THE WIN RATE IS NOT THE BUG</h2>
+    <div class="wrapt">
+      <table>
+        <thead><tr><th>Measure</th><th class="n">You have</th><th class="n">Break-even needs</th><th class="n">Short by</th></tr></thead>
+        <tbody>
+          <tr><td>Win rate</td><td class="n">29.72%</td><td class="n">38.98%</td>
+              <td class="n" style="color:var(--loss)">9.26 pts</td></tr>
+          <tr><td>Payoff · avg win ÷ avg loss</td><td class="n">1.565×</td><td class="n">2.364×</td>
+              <td class="n" style="color:var(--loss)">33.8%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note" style="margin-top:12px">Donchian breakouts are supposed to win under a third of the
+      time. They survive on winner size — that is what is missing, and 1m noise is what truncates it.</div>
+  </section>
+
+  <section>
+    <h2>THE COST MAP — SPREAD AS A SHARE OF ONE BAR'S RANGE</h2>
+    <div class="wrapt">
+      <table>
+        <thead><tr><th>Timeframe</th><th class="n">Typical bar</th><th class="n">Quiet session</th>
+          <th>Spread eats</th></tr></thead>
+        <tbody>
+          <tr class="now"><td>1 min &nbsp;← you are here</td><td class="n">1.46 p</td><td class="n">0.48 p</td>
+            <td><span class="track"><span class="fill" style="width:100%;background:var(--loss)"></span></span>
+                <b style="font-family:var(--mono);color:var(--loss)">110%</b></td></tr>
+          <tr><td>5 min</td><td class="n">3.27 p</td><td class="n">1.07 p</td>
+            <td><span class="track"><span class="fill" style="width:45%;background:var(--loss)"></span></span>
+                <b style="font-family:var(--mono)">49%</b></td></tr>
+          <tr><td>15 min</td><td class="n">5.66 p</td><td class="n">1.86 p</td>
+            <td><span class="track"><span class="fill" style="width:26%;background:var(--warn)"></span></span>
+                <b style="font-family:var(--mono)">28%</b></td></tr>
+          <tr class="go"><td>30 min</td><td class="n">8.01 p</td><td class="n">2.63 p</td>
+            <td><span class="track"><span class="fill" style="width:18%;background:var(--warn)"></span></span>
+                <b style="font-family:var(--mono)">20%</b></td></tr>
+          <tr class="go"><td>1 hour &nbsp;← belongs here</td><td class="n">11.32 p</td><td class="n">3.71 p</td>
+            <td><span class="track"><span class="fill" style="width:13%;background:var(--gain)"></span></span>
+                <b style="font-family:var(--mono);color:var(--gain)">14%</b></td></tr>
+          <tr><td>4 hour</td><td class="n">22.64 p</td><td class="n">7.43 p</td>
+            <td><span class="track"><span class="fill" style="width:6%;background:var(--gain)"></span></span>
+                <b style="font-family:var(--mono)">7%</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note" style="margin-top:12px">You trade 20:00–21:00 UTC, where bars run a third of normal.
+      In that window the spread is <b style="color:var(--loss)">333% of a bar</b> — three bars of movement
+      paid for the right to guess the fourth.</div>
+  </section>
+
+  <section>
+    <h2>THE DAILY ARITHMETIC</h2>
+    <div class="thesis" style="border-left-color:var(--warn)"><style>.thesis .mrow{grid-template-columns:345px 1fr 96px}</style>
+      <div class="mrow">
+        <span class="mlabel">Spread paid · 52 trades/day</span>
+        <div class="mbar" style="width:100%;background:var(--loss)"></div>
+        <span class="mval" style="color:var(--loss)">83 p</span>
+      </div>
+      <div class="mrow">
+        <span class="mlabel">EURUSD daily range · ATR</span>
+        <div class="mbar" style="width:66.7%;background:#4a5563"></div>
+        <span class="mval" style="color:var(--ink2)">55 p</span>
+      </div>
+      <div class="note" style="color:var(--warn);font-size:21px;margin-top:16px">
+        You spend 83 pips a day in a market that moves 55. The strategy must capture
+        <b>150% of everything available, every day</b>, just to reach zero.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>WATCHED LIVE — RIGHT ABOUT DIRECTION, STILL DOWN</h2>
+    <div class="wrapt" style="padding:24px 26px">
+      <div style="font-size:21px;color:var(--ink2);line-height:1.55;margin-bottom:20px">
+        Across ten minutes of your screenshots the market did exactly what a channel break wants.
+        Price ran from 1.15273 up to a new high at 1.15294 — a <b style="color:var(--ink)">2.1 pip</b>
+        advance, one of the cleanest moves of the session. Here is what a long taken on that break
+        is actually worth:
+      </div>
+      <div class="mrow" style="grid-template-columns:395px 1fr 130px">
+        <span class="mlabel">Mid price · 20:47 → 20:51</span>
+        <div class="mbar" style="width:23%;background:var(--gain)"></div>
+        <span class="mval" style="color:var(--gain)">+0.35 p</span>
+      </div>
+      <div class="mrow" style="grid-template-columns:395px 1fr 130px">
+        <span class="mlabel">Your long · 1.15298 → 1.15286</span>
+        <div class="mbar" style="width:78%;background:var(--loss)"></div>
+        <span class="mval" style="color:var(--loss)">−1.20 p</span>
+      </div>
+      <div class="note" style="font-size:21px;color:var(--warn);margin-top:18px">
+        The market went your way and the position lost 1.2 pips. On this timeframe being right
+        about direction is not enough to be profitable — that is the entire postmortem, in one trade.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>THE ONE TEST THAT SETTLES IT</h2>
+    <div class="note" style="margin:-6px 0 14px;font-size:20px;color:var(--ink2)">
+      Strategy Properties → set commission and slippage to zero → re-run the identical backtest.</div>
+    <div class="two">
+      <div class="box a"><h3>PROFIT FACTOR &gt; 1.0</h3>
+        <p>The signal has an edge; cost is eating it. Do not touch the channel length — you would be
+           tuning a working part. Move it to 30m–1h.</p></div>
+      <div class="box b"><h3>STILL &lt; 1.0</h3>
+        <p>The signal is unprofitable before costs. No timeframe or parameter set saves it; a higher
+           timeframe only loses more slowly. Rebuild the premise.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>WHAT WON'T HELP</h2>
+    <div class="bullets"><ul>
+      <li><b>Tuning the channel length.</b> The deficit is 34% of payoff. A search on 1m fits these ten days, not the market.</li>
+      <li><b>More trades, or bigger size.</b> Expectancy is negative per trade — volume and size scale the loss linearly.</li>
+      <li><b>A tighter stop.</b> It raises the spread's share of every loss and pushes payoff further from 2.364×.</li>
+    </ul></div>
+  </section>
+
+  <footer>
+    <span>Stats, spread and price axis read from your five screenshots, 13 Aug 2026 20:41–20:51 UTC
+      (panel identical in all five). EURUSD ATR 55.5 p from Alpha Vantage daily, last 14 sessions.</span>
+    <span style="text-align:right;white-space:nowrap">Intraday bar ranges are √t estimates.<br>
+      Spread observed 1.5–1.7 p; 1.6 used.<br>Analysis of a backtest, not advice.</span>
+  </footer>
+
+</div>
