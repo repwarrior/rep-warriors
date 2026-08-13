@@ -151,6 +151,28 @@ def build_svg(plan, geo, scale, crop):
             f'opacity="0.95"/>'
         )
 
+    # --- strategy entries: a time marker plus a numbered side badge ---------
+    ent = plan.get("entries")
+    if ent:
+        top, bot = plan.get("entry_line_y", [340, 1466])
+        rows = plan.get("entry_badge_y", [1500, 1552])
+        for e in ent:
+            colour = SUPPORT if e["side"] == "long" else RESISTANCE
+            x = e["x"]
+            o.append(
+                f'<line x1="{x}" y1="{top}" x2="{x}" y2="{bot}" stroke="{colour}" '
+                f'stroke-width="2" stroke-dasharray="7 7" opacity="0.5"/>'
+            )
+            by = rows[e.get("row", 0)]
+            o.append(
+                f'<rect x="{x - 30}" y="{by - 20}" width="60" height="40" rx="6" '
+                f'fill="{BG}" fill-opacity="0.95" stroke="{colour}" stroke-width="2.5"/>'
+            )
+            o.append(
+                f'<text x="{x}" y="{by + 10}" text-anchor="middle" class="ent" '
+                f'fill="{colour}">{e["n"]}{"L" if e["side"] == "long" else "S"}</text>'
+            )
+
     # --- callouts: a text label with a leader line to a point ---------------
     for c in plan.get("callouts", []):
         colour = c.get("colour", ACCENT)
@@ -199,6 +221,9 @@ def build_html(plan, geo, scale):
     if "note" in kinds:
         legend.append((f'<span class="sw box" style="border-color:{ACCENT}"></span>',
                        plan.get("note_legend", "Thin tape")))
+    if plan.get("entries"):
+        legend.append((f'<span class="sw" style="background:{SUPPORT}"></span>', "Long entry"))
+        legend.append((f'<span class="sw" style="background:{RESISTANCE}"></span>', "Short entry"))
     for extra in plan.get("legend_extra", []):
         legend.append((f'<span class="sw" style="background:{ACCENT}"></span>', extra))
     legend_html = "".join(

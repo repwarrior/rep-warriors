@@ -59,36 +59,97 @@
       "to_y": 790
     },
     {
-      "text": "2 LONGS TAKEN\nINTO THE DECLINE",
-      "text_x": 928,
-      "text_y": 700,
-      "from_x": 850,
-      "from_y": 740,
-      "to_x": 410,
-      "to_y": 1000
-    },
-    {
-      "text": "6 ENTRIES HERE\nLONG SHORT LONG SHORT",
-      "text_x": 895,
-      "text_y": 1425,
+      "text": "FLIPPED LONG\u2192SHORT\nIN 5 MINUTES",
+      "text_x": 905,
+      "text_y": 900,
       "from_x": 830,
-      "from_y": 1400,
-      "to_x": 720,
-      "to_y": 1330
+      "from_y": 915,
+      "to_x": 480,
+      "to_y": 1050
     }
   ],
   "summary": {
     "points": [
-      "Eleven entries in four hours \u2014 roughly 66 a day, five short and six long. Six of them landed inside a 6.5 USD box in the final 100 minutes, alternating long-short-long-short. That is a whipsaw signature, not a signal.",
-      "The 28 USD slide from 17:00 to 19:20 is exactly the move a channel breakout exists to catch. It took at least two longs into it, near 4,357.8 and 4,356.2 \u2014 buying bounces against a falling channel.",
-      "Gold is a genuinely better venue than EURUSD. Its 1m bars run about 2.6\u00d7 larger relative to price (1.10 bp vs 0.42 bp) and its spread is roughly half in bp terms, so spread eats ~63% of a 1m bar here against 333% on EURUSD \u2014 about 5\u00d7 kinder.",
-      "Still not enough. At a 0.30 spread and 66 trades a day you pay ~20 USD into gold's ~55 USD daily range: 36% of everything available. You want that under 10%, which means 15m\u20131h \u2014 the same conclusion as EURUSD."
+      "Stop-and-reverse: the strategy is never flat. Ten signals in four hours alternating short-long-short-long without exception \u2014 each entry closes the previous position and opens the opposite one.",
+      "Average time in a direction is 23 minutes. Three of the flips lasted 12, 8 and 5 minutes (2\u21923, 4\u21925, 6\u21927) \u2014 all of them inside or entering the chop box, which is where a channel system bleeds.",
+      "The 28 USD slide from 17:00 to 19:20 is the move a channel breakout exists to catch. It held short for the first leg, then flipped long at 4,358 and 4,356 mid-decline (entries 2 and 4) \u2014 buying bounces against a falling channel.",
+      "Gold is a genuinely better venue than EURUSD: 1m bars run ~2.6\u00d7 larger relative to price (1.10 bp vs 0.42 bp) and the spread is roughly half in bp, so spread eats ~63% of a bar here against 333%. Still far from the <10% a breakout system needs \u2014 at 0.30 spread, 10 flips a day is ~20 USD against gold's ~55 USD range."
     ],
-    "bias": "Verdict: BETTER INSTRUMENT, SAME TIMEFRAME PROBLEM",
-    "invalidation": "gold spread assumed 0.20\u20130.50 USD; send the SELL/BUY tags and these numbers become exact"
+    "bias": "Verdict: NEVER FLAT, FLIPPING EVERY 23 MINUTES",
+    "invalidation": "marker arrows are drawn offset from the bar, so entry times are exact but per-trade P&L is not read from them; gold spread assumed 0.20\u20130.50 USD"
   },
   "badge": {
     "title": "STRATEGY AUTOPSY",
     "sub": "Price Channel, 1m gold"
-  }
+  },
+  "entries": [
+    {
+      "x": 159,
+      "side": "short",
+      "n": 1,
+      "row": 0
+    },
+    {
+      "x": 294,
+      "side": "long",
+      "n": 2,
+      "row": 0
+    },
+    {
+      "x": 330,
+      "side": "short",
+      "n": 3,
+      "row": 1
+    },
+    {
+      "x": 450,
+      "side": "long",
+      "n": 4,
+      "row": 0
+    },
+    {
+      "x": 465,
+      "side": "short",
+      "n": 5,
+      "row": 1
+    },
+    {
+      "x": 557,
+      "side": "long",
+      "n": 6,
+      "row": 0
+    },
+    {
+      "x": 582,
+      "side": "short",
+      "n": 7,
+      "row": 1
+    },
+    {
+      "x": 673,
+      "side": "long",
+      "n": 8,
+      "row": 0
+    },
+    {
+      "x": 722,
+      "side": "short",
+      "n": 9,
+      "row": 1
+    },
+    {
+      "x": 802,
+      "side": "long",
+      "n": 10,
+      "row": 0
+    }
+  ],
+  "entry_line_y": [
+    340,
+    1466
+  ],
+  "entry_badge_y": [
+    1500,
+    1552
+  ]
 }

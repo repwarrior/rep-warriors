@@ -86,7 +86,22 @@ leader line via `from_x/from_y/to_x/to_y`.
 
 The path is a polyline of `{x, price}` from the last bar into the empty space on
 the right. Make it say something: where the pullback lands, where the first
-target is, where it stalls.
+target is, where it stalls. Omit it entirely when a forecast would be noise --
+a 1m chart, or an autopsy of what a strategy already did. The legend keys only
+what the plan actually draws, so leaving it out is clean.
+
+### Charts with a strategy running on them
+
+TradingView draws entry markers in exact colours -- blue `(56, 96, 246)`, red
+`(234, 57, 75)` -- distinct from candle red `(239, 83, 80)`. Match within a
+tolerance of ~14 and cluster the blobs to recover every entry, its side and its
+x position; the big arrow (~27x43 px) carries the text label, the small
+triangle (~14x27) is its pair. Feed them to the `entries` list and the renderer
+draws a time marker and a numbered side badge for each.
+
+The arrow's *y* position is a drawing offset -- below the bar for longs, above
+for shorts -- not the fill price. Entry times are exact; do not infer per-trade
+P&L from marker height, or every trade reads as a winner.
 
 ### 5. Render, then look at it
 
