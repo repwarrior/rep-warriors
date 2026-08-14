@@ -1,0 +1,76 @@
+{
+  "source": "examples/nflx-1m-wide.png",
+  "geometry": "plans/nflx-1m-wide.geometry.json",
+  "crop": [
+    0,
+    175,
+    1290,
+    2390
+  ],
+  "decimals": 2,
+  "calibration": {
+    "top_gridline_price": 78.2,
+    "step": 0.05
+  },
+  "plot_left_x": 16,
+  "plot_right_x": 1210,
+  "label_right_x": 640,
+  "tag_x": 1060,
+  "badge": {
+    "title": "PULLBACK CHECK",
+    "sub": "what's visible vs. the bigger picture"
+  },
+  "meta": {
+    "symbol": "NFLX \u00b7 Netflix, Inc.",
+    "timeframe": "1m",
+    "price": 77.9,
+    "asof": "14 Aug 2026 \u00b7 20:31 UTC"
+  },
+  "levels": [
+    {
+      "kind": "resistance",
+      "price": 78.24,
+      "label": "",
+      "x1": 600,
+      "label_x": 620
+    }
+  ],
+  "tags": [
+    {
+      "kind": "resistance",
+      "price": 78.24
+    },
+    {
+      "kind": "support",
+      "price": 77.9
+    }
+  ],
+  "callouts": [
+    {
+      "text": "TODAY'S HIGH RETESTS\nYESTERDAY'S CLOSE, THEN FADED",
+      "text_x": 16,
+      "text_y": 700,
+      "anchor": "start"
+    },
+    {
+      "text": "1m MOMENTUM TURNED NEGATIVE",
+      "text_x": 300,
+      "text_y": 2070,
+      "anchor": "start",
+      "from_x": 300,
+      "from_y": 2055,
+      "to_x": 560,
+      "to_y": 1955
+    }
+  ],
+  "summary": {
+    "points": [
+      "This screenshot only shows 77.90\u201378.25 \u2014 the last ~3 hours of a stock that closed at 78.24 yesterday after a huge breakout day. Everything below is real, but off this zoom.",
+      "Yesterday (13 Aug): gapped up from 74.21 to open 76.01, ran to 78.40, closed 78.24 \u2014 a 5.4% range on 1.4x average volume. That's the move behind today's elevated price.",
+      "The heaviest support isn't visible here: 73.00\u201374.50 is where NFLX spent the most time over the last month (time-at-price count 9-10 vs 2-3 up here). 76.29\u201376.90 is the next shelf down \u2014 yesterday's pre-breakout swing high, a natural first retest level if today's pullback continues.",
+      "Daily MACD is still solidly positive (0.80 vs signal 0.21) \u2014 the breakout thesis is intact on the timeframe that matters. The 1m MACD going negative just means the last few minutes cooled off, not that anything broke."
+    ],
+    "bias": "Read: healthy pullback inside a breakout, not a reversal \u2014 unless it gives back the gap",
+    "invalidation": "a daily close back below 74.50 would erase the breakout and put price back in the pre-breakout base; ATR14 is 2.30 (2.9%), so a 0.35 intraday dip like this one is unremarkable"
+  }
+}
