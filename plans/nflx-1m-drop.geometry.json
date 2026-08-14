@@ -1,0 +1,37 @@
+{
+  "image": {
+    "width": 1290,
+    "height": 2796
+  },
+  "separators": [
+    1596,
+    2391,
+    2547
+  ],
+  "gutter_x": 1230,
+  "price_pane": {
+    "top": 223,
+    "bottom": 1596
+  },
+  "gridlines_y": [
+    471,
+    678,
+    886,
+    1093,
+    1300
+  ],
+  "gridline_spacing": 207.0,
+  "data_x_hint": {
+    "left": 0,
+    "right": 1229
+  },
+  "time_gridline_x": [
+    87,
+    302,
+    516,
+    731,
+    946
+  ],
+  "time_gridline_spacing": 215.0,
+  "source": "examples/nflx-1m-drop.png"
+}
