@@ -27,10 +27,12 @@ from rules import SHORT, BacktestRecord, PullbackToSupport, RuleSet, Signal
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-# Placeholder, as the class docstring says at length. Real numbers or no trade.
+# Placeholder, and labelled as one. In anything real this comes out of
+# edgelab.from_rows(), which is the point of that module existing.
 BACKTEST = BacktestRecord(
-    period="2019-01..2025-12 (PLACEHOLDER - not a real backtest)",
-    samples=240, win_rate=0.55, avg_win_pp=9.0, avg_loss_pp=4.0,
+    period="2019-01..2025-12", samples=240, net_pp=3.15,
+    source="PLACEHOLDER - not a real backtest", verdict="PROVEN",
+    ci_low_pp=1.10, ci_high_pp=5.20, beats_random_pct=99.4,
 )
 
 SUPPORT, WIDTH = 99.5, 1.0
@@ -113,6 +115,33 @@ def main() -> None:
                 if k in record}
         keep["decision_id"] = keep["decision_id"][:8]
         print("  " + json.dumps(keep, default=str))
+
+    graded_rules_report()
+
+
+def graded_rules_report() -> None:
+    """The other half: what a real graded rule table does at the gate.
+
+    These are the published edgelab figures. Every one is blocked, which is the
+    system agreeing with the grader rather than a second opinion about it.
+    """
+    import edgelab
+
+    rows = [
+        {"rule": "rsi_oversold_30", "verdict": "LIKELY", "n": 524,
+         "mean_net": "+0.315%", "ci_low": -0.088, "ci_high": 0.707,
+         "beats_random_pct": "100.0%", "period": "2014-08-15..2026-08-12"},
+        {"rule": "ultosc_oversold_30", "verdict": "LIKELY", "n": 373,
+         "mean_net": "+0.177%", "beats_random_pct": "99.2%",
+         "period": "2014-08-15..2026-08-12"},
+        {"rule": "macd_bull_cross", "verdict": "NO_EDGE", "n": 1935,
+         "mean_net": "-0.503%", "beats_random_pct": "20.0%",
+         "period": "2014-08-15..2026-08-12"},
+    ]
+    loaded = edgelab.from_rows(rows, source="edgelab@2026-08-18",
+                               scale=edgelab.PP)
+    print("\ngraded rules at the gate:")
+    print(edgelab.gate_report(loaded.records, Limits()))
 
 
 if __name__ == "__main__":

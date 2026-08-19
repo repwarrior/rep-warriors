@@ -65,3 +65,73 @@ class Journal:
             r for r in records
             if r["type"] == "intent" and r["decision_id"] not in done
         ]
+
+
+def shadow_rows(journal: "Journal") -> list[dict]:
+    """One row per placed order that carried a veto verdict.
+
+    Join these to your own scored returns on `decision_id` — this package
+    records what was decided and what was sent, never what it was worth.
+    """
+    records = journal.read_all()
+    outcomes = {
+        r["decision_id"]: r for r in records if r["type"] == "outcome"
+    }
+    rows = []
+    for r in records:
+        if r["type"] != "intent" or not r.get("veto"):
+            continue
+        outcome = outcomes.get(r["decision_id"])
+        if outcome is None or outcome.get("status") == "error":
+            continue
+        intent = r.get("intent", {})
+        rows.append(
+            {
+                "decision_id": r["decision_id"],
+                "ts": r["ts"],
+                "symbol": r.get("symbol"),
+                "rule": intent.get("rule"),
+                "side": intent.get("side"),
+                "qty": intent.get("qty"),
+                "veto_allowed": r["veto"].get("allowed"),
+                "veto_reason": r["veto"].get("reason"),
+                "veto_mode": r["veto"].get("mode"),
+                "veto_model": r["veto"].get("model"),
+            }
+        )
+    return rows
+
+
+def veto_scorecard(rows: list[dict], returns: dict[str, float]) -> dict:
+    """Did the veto's objections actually pick out worse trades?
+
+    `returns` maps decision_id to whatever realised return your scorer
+    produced. Only rows recorded in shadow mode are usable — an enforced veto
+    means the trade never happened, so it has no return to compare.
+
+    This reports means and counts. It is not a significance test, and at the
+    sample sizes a daily loop accumulates it will not be one for a long while:
+    treat a difference here as a reason to keep collecting, not as a finding.
+    """
+    vetoed, allowed = [], []
+    for row in rows:
+        if row.get("veto_mode") != "shadow":
+            continue
+        value = returns.get(row["decision_id"])
+        if value is None:
+            continue
+        (vetoed if row["veto_allowed"] is False else allowed).append(value)
+
+    def mean(xs):
+        return sum(xs) / len(xs) if xs else None
+
+    vetoed_mean, allowed_mean = mean(vetoed), mean(allowed)
+    return {
+        "n_vetoed": len(vetoed),
+        "n_allowed": len(allowed),
+        "mean_vetoed": vetoed_mean,
+        "mean_allowed": allowed_mean,
+        "difference": None
+        if vetoed_mean is None or allowed_mean is None
+        else allowed_mean - vetoed_mean,
+    }

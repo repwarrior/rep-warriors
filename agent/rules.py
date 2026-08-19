@@ -2,10 +2,13 @@
 
 Two invariants hold everything else up:
 
-  1. An edge estimate is computed from a recorded backtest, not asserted.
-     `BacktestRecord.edge_pp()` is arithmetic over numbers you had to write
-     down. There is no code path where an edge is a free-form number.
-  2. A rule with too small a sample cannot fire, no matter what it computes.
+  1. An edge is a measured number carrying its provenance. `BacktestRecord`
+     records where it came from, over what period, on how many trades, with
+     whatever interval and null-comparison the grader produced. There is no
+     code path where an edge is asserted.
+  2. A rule fires on the record for the regime it is actually in, not on an
+     average across regimes. An edge of +0.32% that is -0.20% in calm markets
+     and +0.87% in stressed ones is two strategies wearing one number.
 
 Rules see `snapshot.features` only. Nothing from `snapshot.context` reaches
 here — see market.py for why.
@@ -13,42 +16,112 @@ here — see market.py for why.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Protocol, Sequence
+from dataclasses import dataclass, replace
+from typing import Mapping, Protocol, Sequence
 
 from market import Snapshot
 
 LONG = "long"
 SHORT = "short"
 
+UNGRADED = "UNGRADED"
+
 
 @dataclass(frozen=True)
 class BacktestRecord:
-    """Provenance for a rule's edge. A rule cannot fire without one.
+    """A measured edge and everything needed to judge whether to believe it.
 
-    The numbers here are the ones you would have to defend to somebody else.
-    Keep the period string honest, including any out-of-sample split.
+    `net_pp` is the mean net return per trade in percentage points, after
+    costs. It is the number, not a number derived from three other numbers —
+    if your grader measured the mean directly, pass it directly.
+
+    The optional statistics are what turn a point estimate into evidence. A
+    mean of +0.3% whose bootstrap interval spans zero is not the same claim as
+    one whose interval does not, and gates.py can tell them apart only if you
+    carry them through.
     """
 
     period: str
     samples: int
-    win_rate: float
-    avg_win_pp: float
-    avg_loss_pp: float
+    net_pp: float
+    source: str
+    """Where this came from. 'edgelab:rsi_oversold_30@2026-08-18', not 'me'."""
+    verdict: str = UNGRADED
+    regime: str | None = None
+    win_rate: float | None = None
+    avg_win_pp: float | None = None
+    avg_loss_pp: float | None = None
+    ci_low_pp: float | None = None
+    ci_high_pp: float | None = None
+    beats_random_pct: float | None = None
+    gross_pp: float | None = None
+    cost_pp: float | None = None
 
     def __post_init__(self) -> None:
         if self.samples <= 0:
             raise ValueError("samples must be > 0")
-        if not 0.0 <= self.win_rate <= 1.0:
+        if not self.source:
+            raise ValueError("a record without a source is not evidence")
+        if self.win_rate is not None and not 0.0 <= self.win_rate <= 1.0:
             raise ValueError("win_rate must be in [0, 1]")
-        if self.avg_win_pp <= 0:
+        if (
+            self.ci_low_pp is not None
+            and self.ci_high_pp is not None
+            and self.ci_low_pp > self.ci_high_pp
+        ):
+            raise ValueError("ci_low_pp must be <= ci_high_pp")
+
+    @classmethod
+    def from_win_loss(
+        cls,
+        *,
+        period: str,
+        samples: int,
+        win_rate: float,
+        avg_win_pp: float,
+        avg_loss_pp: float,
+        source: str,
+        **kw,
+    ) -> "BacktestRecord":
+        """Derive the mean from win rate and average win/loss.
+
+        Use only when the grader did not report a mean directly — deriving
+        loses whatever the real distribution did at the tails.
+        """
+        if avg_win_pp <= 0:
             raise ValueError("avg_win_pp must be > 0")
-        if self.avg_loss_pp < 0:
+        if avg_loss_pp < 0:
             raise ValueError("avg_loss_pp must be >= 0")
+        net = win_rate * avg_win_pp - (1.0 - win_rate) * avg_loss_pp
+        return cls(
+            period=period, samples=samples, net_pp=net, source=source,
+            win_rate=win_rate, avg_win_pp=avg_win_pp, avg_loss_pp=avg_loss_pp,
+            **kw,
+        )
 
     def edge_pp(self) -> float:
-        """Expected value per trade in percentage points."""
-        return self.win_rate * self.avg_win_pp - (1.0 - self.win_rate) * self.avg_loss_pp
+        return self.net_pp
+
+    @property
+    def ci_excludes_zero(self) -> bool | None:
+        """None when no interval was supplied — which is not the same as False
+        and gates.py treats it differently."""
+        if self.ci_low_pp is None or self.ci_high_pp is None:
+            return None
+        return self.ci_low_pp > 0 or self.ci_high_pp < 0
+
+    def as_log(self) -> dict:
+        return {
+            "source": self.source,
+            "verdict": self.verdict,
+            "regime": self.regime,
+            "period": self.period,
+            "samples": self.samples,
+            "net_pp": round(self.net_pp, 4),
+            "ci_pp": None if self.ci_low_pp is None
+            else [round(self.ci_low_pp, 4), round(self.ci_high_pp or 0.0, 4)],
+            "beats_random_pct": self.beats_random_pct,
+        }
 
 
 @dataclass(frozen=True)
@@ -89,6 +162,49 @@ class Rule(Protocol):
     def evaluate(self, snapshot: Snapshot) -> Signal | None: ...
 
 
+class RegimeConditional:
+    """Wraps a rule so it fires on the record for the current regime.
+
+    A regime with no record produces no signal: absence of evidence here means
+    no trade, not the average of the regimes you did measure. This is the
+    difference between a rule that made money in stressed markets and a rule
+    you believe works everywhere because its mean was positive.
+    """
+
+    def __init__(
+        self,
+        rule: Rule,
+        records: Mapping[str, BacktestRecord],
+        regime_key: str = "regime",
+    ) -> None:
+        if not records:
+            raise ValueError("RegimeConditional needs at least one regime record")
+        self.rule = rule
+        self.records = dict(records)
+        self.regime_key = regime_key
+        self.name = rule.name
+
+    @property
+    def backtest(self) -> BacktestRecord:
+        """Weakest regime, for introspection. Gating uses the record actually
+        selected at evaluation time, not this one."""
+        return min(self.records.values(), key=lambda r: r.samples)
+
+    def evaluate(self, snapshot: Snapshot) -> Signal | None:
+        regime = snapshot.features.get(self.regime_key)
+        record = self.records.get(regime) if regime is not None else None
+        if record is None:
+            return None
+        signal = self.rule.evaluate(snapshot)
+        if signal is None:
+            return None
+        return replace(
+            signal,
+            rule=f"{signal.rule}[{regime}]",
+            backtest=replace(record, regime=regime),
+        )
+
+
 @dataclass(frozen=True)
 class RuleSetResult:
     signal: Signal | None
@@ -101,7 +217,7 @@ class RuleSetResult:
             "fired": self.fired,
             "skipped": self.skipped,
             "note": self.note,
-            "edge_pp": round(self.signal.edge_pp, 4) if self.signal else None,
+            "backtest": self.signal.backtest.as_log() if self.signal else None,
         }
 
 
@@ -110,6 +226,10 @@ class RuleSet:
 
     Disagreement means stand aside. Agreement takes the *lowest* edge of the
     rules that fired, so adding a rule can never inflate an edge estimate.
+
+    The sample-size floor applies to the record the signal actually carries,
+    which for a regime-conditional rule is the record for the regime it fired
+    in — not some blended count across regimes.
     """
 
     def __init__(self, rules: Sequence[Rule], version: str, min_samples: int) -> None:
@@ -122,12 +242,16 @@ class RuleSet:
         skipped: list[str] = []
 
         for rule in self.rules:
-            if rule.backtest.samples < self.min_samples:
-                skipped.append(f"{rule.name}: {rule.backtest.samples} samples")
-                continue
             signal = rule.evaluate(snapshot)
-            if signal is not None:
-                fired.append(signal)
+            if signal is None:
+                continue
+            if signal.backtest.samples < self.min_samples:
+                skipped.append(
+                    f"{signal.rule}: {signal.backtest.samples} samples "
+                    f"< {self.min_samples}"
+                )
+                continue
+            fired.append(signal)
 
         names = [s.rule for s in fired]
         if not fired:
@@ -147,12 +271,11 @@ class RuleSet:
 
 
 class PullbackToSupport:
-    """EXAMPLE ONLY — this rule is here to show the shape, not to be traded.
+    """EXAMPLE ONLY — here to show the shape, not to be traded.
 
-    The BacktestRecord below is a PLACEHOLDER. It is not the output of any
-    backtest; the numbers are invented. `RuleSet` cannot tell the difference,
-    which is exactly why you have to replace it with numbers you measured
-    before this rule is allowed anywhere near an order.
+    Whatever BacktestRecord you hand this has to come from a grader. See
+    edgelab.py for the adapter that builds one from a graded rule table; a
+    record you typed by hand is an opinion with a dataclass around it.
     """
 
     name = "pullback_to_support"

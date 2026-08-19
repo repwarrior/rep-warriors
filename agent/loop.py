@@ -34,7 +34,7 @@ from intents import Intent, Kind
 from journal import Journal, new_decision_id
 from market import Snapshot
 from rules import RuleSet
-from veto import Veto
+from veto import Veto, VetoMode
 
 log = logging.getLogger("agent.loop")
 
@@ -62,6 +62,7 @@ class Runtime:
     account: AccountState
     calendar: SessionCalendar
     limits: Limits
+    veto_mode: VetoMode = VetoMode.ENFORCE
 
 
 @dataclass(frozen=True)
@@ -136,13 +137,18 @@ def run_tick(rt: Runtime, symbol: str, now: datetime | None = None) -> TickResul
 
     # Exits skip the veto entirely. Nothing gets to talk you out of an exit.
     veto_log = None
-    if intent.kind is Kind.OPEN:
+    if intent.kind is Kind.OPEN and rt.veto_mode is not VetoMode.OFF:
         verdict = rt.veto.consult(intent, snapshot)
-        veto_log = verdict.as_log()
-        if not verdict.allowed:
+        veto_log = {**verdict.as_log(), "mode": rt.veto_mode.value}
+        if not verdict.allowed and rt.veto_mode is VetoMode.ENFORCE:
             record(VETOED, intent=intent.as_log(), gate=gate.as_log(),
                    veto=veto_log, rules=result.as_log())
             return TickResult(VETOED, decision_id, verdict.reason)
+        if not verdict.allowed:
+            # Shadow mode: the objection is on the record, the trade proceeds,
+            # and whether the objection was worth anything is a later question
+            # for the data rather than a judgement made here.
+            log.info("shadow veto on %s: %s", symbol, verdict.reason)
 
     # Phase one: the intent is durable before the order can exist.
     record("intent", intent=intent.as_log(), gate=gate.as_log(),

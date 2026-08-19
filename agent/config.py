@@ -15,11 +15,32 @@ class Limits:
 
     # --- entry filters -------------------------------------------------
     min_edge_pp: float = 2.0
-    """Minimum edge, in percentage points, for an opening trade. Computed by
-    the rule layer from a recorded backtest — never supplied by a model."""
+    """Minimum measured net edge, in percentage points, for an opening trade.
+
+    Carried over from the original skeleton's 2-4pp threshold. Be aware that
+    this is very large for short-hold mean reversion in liquid names: a grader
+    measuring that strategy class over 12 years put its best rule at 0.315pp
+    net per trade, six times below this bar. Either the threshold belongs to a
+    different strategy class or nothing in that class is tradeable — worth
+    settling deliberately rather than inheriting. The statistical checks below
+    are the principled version of the same question."""
 
     min_backtest_samples: int = 100
-    """A rule whose backtest has fewer trades than this cannot fire at all."""
+    """A signal whose record has fewer trades than this cannot fire."""
+
+    accepted_verdicts: frozenset[str] = frozenset({"PROVEN"})
+    """Grader verdicts allowed to trade. Widen to include weaker verdicts only
+    deliberately — e.g. frozenset({"PROVEN", "LIKELY"}) when paper trading to
+    collect execution data, where the gate blocking every entry is fine."""
+
+    require_ci_excludes_zero: bool = True
+    """Refuse a rule whose confidence interval on the mean spans zero, and
+    refuse one that reports no interval at all. A positive point estimate whose
+    interval includes zero is a hypothesis, not an edge."""
+
+    min_beats_random_pct: float | None = 95.0
+    """Percentile the rule must reach against a random-entry null. None skips
+    the check; a rule reporting no null comparison fails while it is set."""
 
     # --- sizing --------------------------------------------------------
     risk_fraction: float = 0.005

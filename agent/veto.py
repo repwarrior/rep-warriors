@@ -23,6 +23,7 @@ import logging
 import os
 import time
 from dataclasses import dataclass
+from enum import Enum
 from typing import Protocol
 
 from intents import Intent
@@ -31,6 +32,25 @@ from market import Snapshot
 log = logging.getLogger("agent.veto")
 
 PROMPT_VERSION = "veto-1"
+
+
+class VetoMode(str, Enum):
+    """How much authority the veto actually has.
+
+    SHADOW is the honest way to introduce this layer to a system built on
+    measurement. The verdict is recorded and the trade proceeds anyway, so
+    after enough scored trades you can ask whether vetoed trades really did
+    perform worse — against the same null you would apply to any other signal.
+    Promote to ENFORCE when the veto has earned it; delete it when it has not.
+
+    ENFORCE is the safe default for anything unattended, because a veto that
+    fails closed is the thing standing between an outage and an unsupervised
+    position.
+    """
+
+    ENFORCE = "enforce"
+    SHADOW = "shadow"
+    OFF = "off"
 
 # Pinned deliberately. The journal records this string on every decision, so a
 # change in behaviour can always be attributed to a model change or to you.

@@ -47,6 +47,38 @@ class GateResult:
         }
 
 
+def _ci_check(record, limits: Limits) -> Check:
+    """A missing interval is a failure, not a pass. Absent evidence and
+    favourable evidence are not the same thing."""
+    if not limits.require_ci_excludes_zero:
+        return Check("ci_excludes_zero", True, "check disabled")
+    if record is None:
+        return Check("ci_excludes_zero", False, "no backtest record")
+    excludes = record.ci_excludes_zero
+    if excludes is None:
+        return Check("ci_excludes_zero", False, "record reports no interval")
+    return Check(
+        "ci_excludes_zero",
+        excludes,
+        f"interval [{record.ci_low_pp:.3f}, {record.ci_high_pp:.3f}]pp",
+    )
+
+
+def _random_null_check(record, limits: Limits) -> Check:
+    if limits.min_beats_random_pct is None:
+        return Check("beats_random", True, "check disabled")
+    if record is None:
+        return Check("beats_random", False, "no backtest record")
+    pct = record.beats_random_pct
+    if pct is None:
+        return Check("beats_random", False, "record reports no random-entry null")
+    return Check(
+        "beats_random",
+        pct >= limits.min_beats_random_pct,
+        f"beats {pct:.1f}% of random entries, need {limits.min_beats_random_pct:.1f}%",
+    )
+
+
 def _result(checks: list[Check]) -> GateResult:
     return GateResult(passed=all(c.passed for c in checks), checks=checks)
 
@@ -58,7 +90,8 @@ def evaluate(intent: Intent, account: AccountState, limits: Limits) -> GateResul
 
 
 def _evaluate_reduce(intent: Intent, account: AccountState) -> GateResult:
-    """Sanity only. No edge test, no trade cap, no loss halt — by design."""
+    """Sanity only. No edge test, no verdict test, no interval test, no trade
+    cap, no loss halt — by design."""
     held = account.position(intent.symbol)
     checks = [
         Check("qty_positive", intent.qty > 0, f"qty {intent.qty}"),
@@ -78,8 +111,9 @@ def _evaluate_reduce(intent: Intent, account: AccountState) -> GateResult:
 
 def _evaluate_open(intent: Intent, account: AccountState, limits: Limits) -> GateResult:
     signal = intent.signal
+    record = signal.backtest if signal else None
     edge = signal.edge_pp if signal else 0.0
-    samples = signal.backtest.samples if signal else 0
+    samples = record.samples if record else 0
 
     day_pnl = account.day_pnl_pct()
     # Caps are on the resulting position, not on the increment. Checking only
@@ -108,8 +142,16 @@ def _evaluate_open(intent: Intent, account: AccountState, limits: Limits) -> Gat
         Check(
             "edge_threshold",
             edge >= limits.min_edge_pp,
-            f"edge {edge:.2f}pp vs minimum {limits.min_edge_pp:.2f}pp",
+            f"edge {edge:.3f}pp vs minimum {limits.min_edge_pp:.2f}pp",
         ),
+        Check(
+            "verdict_accepted",
+            record is not None and record.verdict in limits.accepted_verdicts,
+            f"verdict {record.verdict if record else 'none'} vs accepted "
+            f"{sorted(limits.accepted_verdicts)}",
+        ),
+        _ci_check(record, limits),
+        _random_null_check(record, limits),
         Check(
             "stop_present",
             intent.stop_price is not None,
